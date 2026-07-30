@@ -38,7 +38,7 @@ npm install
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The application will be available at `http://localhost:3000`
 
 ## 📦 Build & Deployment
 
@@ -48,7 +48,7 @@ The application will be available at `http://localhost:5173`
 # Build for production
 npm run build
 
-# Preview production build locally (runs on http://localhost:4173)
+# Preview production build locally (runs on http://localhost:3000)
 npm run preview
 ```
 
@@ -252,17 +252,17 @@ VITE_ENV=production
 
 ### Port Already in Use
 
-Development server (npm run dev):
+If port 3000 is already in use, you can:
+
 ```bash
-npm run dev -- --port 5174
+# Use a different port for development
+npm run dev -- --port 3001
+
+# Use a different port for preview
+npm run preview -- --port 3001
 ```
 
-Preview server (npm run preview) uses port 4173:
-```bash
-npm run preview -- --port 4174
-```
-
-Or modify `vite.config.ts` to change default ports permanently
+Or modify `vite.config.ts` to change the default port permanently
 
 ## 📝 Performance Optimization
 
