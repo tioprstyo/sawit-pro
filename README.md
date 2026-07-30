@@ -42,7 +42,25 @@ The application will be available at `http://localhost:3000`
 
 ## 📦 Build & Deployment
 
-### Production Build
+### Using Deployment Scripts (Recommended)
+
+```bash
+# Interactive quick start
+./scripts/start.sh
+
+# Full deployment with Docker
+./scripts/deploy.sh full
+
+# Deploy with Docker Compose
+./scripts/deploy.sh compose
+
+# View deployment logs
+./scripts/deploy.sh logs
+```
+
+### Manual Deployment
+
+#### Production Build
 
 ```bash
 # Build for production
@@ -52,24 +70,37 @@ npm run build
 npm run preview
 ```
 
-### Docker Deployment
+#### Docker Deployment
 
 ```bash
 # Build Docker image
 docker build -t sawit-pro .
 
 # Run container
-docker run -p 3000:3000 sawit-pro
+docker run -d -p 3000:3000 --name sawit-pro sawit-pro
+
+# View logs
+docker logs -f sawit-pro
 ```
 
-### Docker Compose
+#### Docker Compose
 
 ```bash
-# Start with docker-compose
-docker-compose up
+# Start services
+docker-compose up -d
+
+# View status
+docker-compose ps
 
 # The app will be available at http://localhost:3000
+
+# Stop services
+docker-compose down
 ```
+
+### Deployment Documentation
+
+For complete deployment guide including cloud platforms (AWS, GCP, Azure), see [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## 🧪 Testing
 
