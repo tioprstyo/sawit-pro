@@ -1,7 +1,31 @@
 version: '3.8'
 
 services:
-  app:
+  # Backend API Server
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_PATH: /app/data/sawit-pro.db
+    volumes:
+      - db-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - fleet-network
+
+  # Frontend Application
+  web:
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,6 +34,10 @@ services:
     environment:
       NODE_ENV: production
       VITE_ENV: production
+      VITE_API_URL: http://api:3001/api
+    depends_on:
+      api:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
@@ -20,6 +48,7 @@ services:
     networks:
       - fleet-network
 
+  # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
     ports:
@@ -28,7 +57,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - app
+      - web
+      - api
     networks:
       - fleet-network
     restart: unless-stopped
@@ -37,7 +67,6 @@ networks:
   fleet-network:
     driver: bridge
 
-# Volume configuration for future database integration
-# volumes:
-#   db-data:
-#     driver: local
+volumes:
+  db-data:
+    driver: local
