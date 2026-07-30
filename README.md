@@ -48,7 +48,7 @@ The application will be available at `http://localhost:5173`
 # Build for production
 npm run build
 
-# Preview production build locally
+# Preview production build locally (runs on http://localhost:4173)
 npm run preview
 ```
 
@@ -251,7 +251,18 @@ VITE_ENV=production
 - Check for type errors: `npx tsc --noEmit`
 
 ### Port Already in Use
-- Change port in vite.config.ts or run on different port: `npm run dev -- --port 5174`
+
+Development server (npm run dev):
+```bash
+npm run dev -- --port 5174
+```
+
+Preview server (npm run preview) uses port 4173:
+```bash
+npm run preview -- --port 4174
+```
+
+Or modify `vite.config.ts` to change default ports permanently
 
 ## 📝 Performance Optimization
 
