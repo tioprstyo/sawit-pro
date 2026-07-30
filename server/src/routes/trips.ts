@@ -88,7 +88,7 @@ router.post('/', (req: Request, res: Response) => {
       insertTripMill.run(id, millId, index + 1);
     });
 
-    const trip = db.prepare('SELECT * FROM trips WHERE id = ?').get(id);
+    const trip = db.prepare('SELECT * FROM trips WHERE id = ?').get(id) as Record<string, unknown>;
     const mills = db.prepare(`
       SELECT m.*, tm.collectionOrder
       FROM trip_mills tm

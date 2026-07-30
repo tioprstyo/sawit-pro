@@ -1,7 +1,10 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
+
+# Install build tools for better-sqlite3
+RUN apk add --no-cache python3 make g++
 
 # Copy server package files
 COPY server/package*.json ./server/
@@ -18,12 +21,12 @@ COPY server/src ./src
 RUN npm run build
 
 # Runtime stage
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init and build tools for better-sqlite3
+RUN apk add --no-cache dumb-init python3 make g++
 
 # Create data directory for SQLite
 RUN mkdir -p /app/data
@@ -32,7 +35,7 @@ RUN mkdir -p /app/data
 COPY server/package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy built application from builder
 COPY --from=builder /app/server/dist ./dist
