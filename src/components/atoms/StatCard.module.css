@@ -1,0 +1,68 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 24px;
+}
+
+.content {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.value {
+  margin: 8px 0 0 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+}
+
+.default .icon {
+  background-color: #e7f0ff;
+  color: #007bff;
+}
+
+.success .icon {
+  background-color: #d1e7dd;
+  color: #28a745;
+}
+
+.info .icon {
+  background-color: #cfe2ff;
+  color: #0dcaf0;
+}
+
+.warning .icon {
+  background-color: #fff3cd;
+  color: #ffc107;
+}
+
+.danger .icon {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
