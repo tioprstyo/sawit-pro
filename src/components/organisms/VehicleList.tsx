@@ -65,6 +65,9 @@ export const VehicleList: React.FC = () => {
   };
 
   const filteredVehicles = useMemo(() => {
+    if (!vehiclesState?.items || !Array.isArray(vehiclesState.items)) {
+      return [];
+    }
     return vehiclesState.items.filter((vehicle) => {
       const matchesSearch =
         vehicle.plateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,7 +76,7 @@ export const VehicleList: React.FC = () => {
       const matchesStatusFilter = !filters.status || vehicle.status === filters.status;
       return matchesSearch && matchesTypeFilter && matchesStatusFilter;
     });
-  }, [vehiclesState.items, searchQuery, filters]);
+  }, [vehiclesState, searchQuery, filters]);
 
   const columns = [
     {

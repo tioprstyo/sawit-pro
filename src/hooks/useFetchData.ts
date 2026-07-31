@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { api } from '../api';
 import { setVehicles, setLoading as setVehicleLoading, setError as setVehicleError } from '../store/vehicleSlice';
@@ -10,22 +10,25 @@ import type { RootState } from '../store';
 export const useFetchVehicles = () => {
   const dispatch = useDispatch();
   const vehicles = useSelector((state: RootState) => state.vehicles);
+  const [fetched, setFetched] = React.useState(false);
 
   useEffect(() => {
+    if (fetched) return;
+
     const fetchData = async () => {
       try {
         dispatch(setVehicleLoading(true));
         const data = await api.vehicles.getAll();
         dispatch(setVehicles(data));
+        setFetched(true);
       } catch (error) {
         dispatch(setVehicleError(error instanceof Error ? error.message : 'Failed to fetch vehicles'));
-      } finally {
-        dispatch(setVehicleLoading(false));
+        setFetched(true);
       }
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, fetched]);
 
   return vehicles;
 };
@@ -33,22 +36,25 @@ export const useFetchVehicles = () => {
 export const useFetchDrivers = () => {
   const dispatch = useDispatch();
   const drivers = useSelector((state: RootState) => state.drivers);
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
+    if (fetched) return;
+
     const fetchData = async () => {
       try {
         dispatch(setDriverLoading(true));
         const data = await api.drivers.getAll();
         dispatch(setDrivers(data));
+        setFetched(true);
       } catch (error) {
         dispatch(setDriverError(error instanceof Error ? error.message : 'Failed to fetch drivers'));
-      } finally {
-        dispatch(setDriverLoading(false));
+        setFetched(true);
       }
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, fetched]);
 
   return drivers;
 };
@@ -56,22 +62,25 @@ export const useFetchDrivers = () => {
 export const useFetchMills = () => {
   const dispatch = useDispatch();
   const mills = useSelector((state: RootState) => state.mills);
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
+    if (fetched) return;
+
     const fetchData = async () => {
       try {
         dispatch(setMillLoading(true));
         const data = await api.mills.getAll();
         dispatch(setMills(data));
+        setFetched(true);
       } catch (error) {
         dispatch(setMillError(error instanceof Error ? error.message : 'Failed to fetch mills'));
-      } finally {
-        dispatch(setMillLoading(false));
+        setFetched(true);
       }
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, fetched]);
 
   return mills;
 };
@@ -79,22 +88,25 @@ export const useFetchMills = () => {
 export const useFetchTrips = () => {
   const dispatch = useDispatch();
   const trips = useSelector((state: RootState) => state.trips);
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
+    if (fetched) return;
+
     const fetchData = async () => {
       try {
         dispatch(setTripLoading(true));
         const data = await api.trips.getAll();
         dispatch(setTrips(data));
+        setFetched(true);
       } catch (error) {
         dispatch(setTripError(error instanceof Error ? error.message : 'Failed to fetch trips'));
-      } finally {
-        dispatch(setTripLoading(false));
+        setFetched(true);
       }
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, fetched]);
 
   return trips;
 };
