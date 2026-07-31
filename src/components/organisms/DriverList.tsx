@@ -58,6 +58,9 @@ export const DriverList: React.FC = () => {
   };
 
   const filteredDrivers = useMemo(() => {
+    if (!driversState?.items || !Array.isArray(driversState.items)) {
+      return [];
+    }
     return driversState.items.filter((driver) => {
       const matchesSearch =
         driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,7 +69,7 @@ export const DriverList: React.FC = () => {
       const matchesFilter = !filters.status || driver.status === filters.status;
       return matchesSearch && matchesFilter;
     });
-  }, [driversState.items, searchQuery, filters]);
+  }, [driversState, searchQuery, filters]);
 
   return (
     <div className={styles.container}>

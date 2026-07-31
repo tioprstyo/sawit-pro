@@ -35,6 +35,9 @@ export const TripList: React.FC = () => {
   };
 
   const filteredTrips = useMemo(() => {
+    if (!tripsState?.items || !Array.isArray(tripsState.items)) {
+      return [];
+    }
     return tripsState.items.filter((trip: any) => {
       const matchesSearch =
         trip.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -43,7 +46,7 @@ export const TripList: React.FC = () => {
       const matchesFilter = !filters.status || trip.status === filters.status;
       return matchesSearch && matchesFilter;
     });
-  }, [tripsState.items, searchQuery, filters, drivers, vehicles]);
+  }, [tripsState, searchQuery, filters, drivers, vehicles]);
 
   const columns = [
     {

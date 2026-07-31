@@ -33,6 +33,9 @@ export const MillList: React.FC = () => {
   ];
 
   const filteredMills = useMemo(() => {
+    if (!millsState?.items || !Array.isArray(millsState.items)) {
+      return [];
+    }
     return millsState.items.filter((mill) => {
       const matchesSearch =
         mill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -41,7 +44,7 @@ export const MillList: React.FC = () => {
         mill.phoneNumber.includes(searchQuery);
       return matchesSearch;
     });
-  }, [millsState.items, searchQuery]);
+  }, [millsState, searchQuery]);
 
   return (
     <div className={styles.container}>
