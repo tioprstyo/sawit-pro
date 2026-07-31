@@ -10,7 +10,7 @@ import type { RootState } from '../store';
 export const useFetchVehicles = () => {
   const dispatch = useDispatch();
   const vehicles = useSelector((state: RootState) => state.vehicles);
-  const [fetched, setFetched] = React.useState(false);
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
     if (fetched) return;
