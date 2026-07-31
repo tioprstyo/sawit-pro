@@ -1,136 +1,165 @@
-import { db } from '../services/database';
+import axios from 'axios';
 import type { Vehicle, Driver, Mill, Trip, DashboardSummary } from '../types';
-import { TripStatus, VehicleStatus, DriverStatus } from '../types';
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const API_BASE_URL = 'http://localhost:3001/api';
+
+const client = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export const api = {
   // Vehicles
   vehicles: {
     getAll: async (): Promise<Vehicle[]> => {
-      await delay(50);
-      return db.getVehicles();
+      const response = await client.get('/vehicles');
+      return response.data;
     },
     getById: async (id: string): Promise<Vehicle | null> => {
-      await delay(50);
-      return db.getVehicleById(id) || null;
+      try {
+        const response = await client.get(`/vehicles/${id}`);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     create: async (data: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>): Promise<Vehicle> => {
-      await delay(50);
-      return db.addVehicle(data);
+      const response = await client.post('/vehicles', data);
+      return response.data;
     },
     update: async (id: string, data: Partial<Vehicle>): Promise<Vehicle | null> => {
-      await delay(50);
-      return db.updateVehicle(id, data);
+      try {
+        const response = await client.put(`/vehicles/${id}`, data);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     delete: async (id: string): Promise<boolean> => {
-      await delay(50);
-      return db.deleteVehicle(id);
+      try {
+        await client.delete(`/vehicles/${id}`);
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 
   // Drivers
   drivers: {
     getAll: async (): Promise<Driver[]> => {
-      await delay(50);
-      return db.getDrivers();
+      const response = await client.get('/drivers');
+      return response.data;
     },
     getById: async (id: string): Promise<Driver | null> => {
-      await delay(50);
-      return db.getDriverById(id) || null;
+      try {
+        const response = await client.get(`/drivers/${id}`);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     create: async (data: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'>): Promise<Driver> => {
-      await delay(50);
-      return db.addDriver(data);
+      const response = await client.post('/drivers', data);
+      return response.data;
     },
     update: async (id: string, data: Partial<Driver>): Promise<Driver | null> => {
-      await delay(50);
-      return db.updateDriver(id, data);
+      try {
+        const response = await client.put(`/drivers/${id}`, data);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     delete: async (id: string): Promise<boolean> => {
-      await delay(50);
-      return db.deleteDriver(id);
+      try {
+        await client.delete(`/drivers/${id}`);
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 
   // Mills
   mills: {
     getAll: async (): Promise<Mill[]> => {
-      await delay(50);
-      return db.getMills();
+      const response = await client.get('/mills');
+      return response.data;
     },
     getById: async (id: string): Promise<Mill | null> => {
-      await delay(50);
-      return db.getMillById(id) || null;
+      try {
+        const response = await client.get(`/mills/${id}`);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     create: async (data: Omit<Mill, 'id' | 'createdAt' | 'updatedAt'>): Promise<Mill> => {
-      await delay(50);
-      return db.addMill(data);
+      const response = await client.post('/mills', data);
+      return response.data;
     },
     update: async (id: string, data: Partial<Mill>): Promise<Mill | null> => {
-      await delay(50);
-      return db.updateMill(id, data);
+      try {
+        const response = await client.put(`/mills/${id}`, data);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     delete: async (id: string): Promise<boolean> => {
-      await delay(50);
-      return db.deleteMill(id);
+      try {
+        await client.delete(`/mills/${id}`);
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 
   // Trips
   trips: {
     getAll: async (): Promise<Trip[]> => {
-      await delay(50);
-      return db.getTrips();
+      const response = await client.get('/trips');
+      return response.data;
     },
     getById: async (id: string): Promise<Trip | null> => {
-      await delay(50);
-      return db.getTripById(id) || null;
+      try {
+        const response = await client.get(`/trips/${id}`);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     create: async (data: Omit<Trip, 'id' | 'createdAt' | 'updatedAt'>): Promise<Trip> => {
-      await delay(50);
-      return db.addTrip(data);
+      const response = await client.post('/trips', data);
+      return response.data;
     },
     update: async (id: string, data: Partial<Trip>): Promise<Trip | null> => {
-      await delay(50);
-      return db.updateTrip(id, data);
+      try {
+        const response = await client.put(`/trips/${id}`, data);
+        return response.data;
+      } catch {
+        return null;
+      }
     },
     delete: async (id: string): Promise<boolean> => {
-      await delay(50);
-      return db.deleteTrip(id);
+      try {
+        await client.delete(`/trips/${id}`);
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 
   // Dashboard
   dashboard: {
     getSummary: async (): Promise<DashboardSummary> => {
-      await delay(100);
-      const allVehicles = db.getVehicles();
-      const allDrivers = db.getDrivers();
-      const allTrips = db.getTrips();
-
-      const activeVehicles = allVehicles.filter(v => v.status === VehicleStatus.ACTIVE).length;
-      const availableDrivers = allDrivers.filter(d => d.status === DriverStatus.AVAILABLE).length;
-      const scheduledTrips = allTrips.filter(t => t.status === TripStatus.SCHEDULED).length;
-      const completedTrips = allTrips.filter(t => t.status === TripStatus.COMPLETED).length;
-
-      let pendingCollections = 0;
-      allTrips.forEach(trip => {
-        if (trip.status !== TripStatus.COMPLETED) {
-          trip.millIds.forEach(() => {
-            pendingCollections++;
-          });
-        }
-      });
-
-      return {
-        totalVehicles: allVehicles.length,
-        activeVehicles,
-        availableDrivers,
-        scheduledTrips,
-        completedTrips,
-        pendingCollections,
-      };
+      const response = await client.get('/dashboard/summary');
+      return response.data;
     },
   },
 };
