@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useFetchTrips, useFetchDrivers, useFetchVehicles } from '../../hooks/useFetchData';
 import { Table, SearchBar, FilterBar } from '../molecules';
 import { Spinner } from '../atoms';
-import type { RootState, Trip } from '../../store';
+import type { RootState } from '../../store';
 import { format } from 'date-fns';
 import styles from './EntityList.module.css';
 
