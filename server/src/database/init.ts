@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { mockData } from '../../../src/utils/mock-data.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = process.env.DB_PATH || path.join(__dirname, '../../data/sawit-pro.db');
@@ -125,53 +126,27 @@ function seedData() {
   const db = new Database(dbPath);
 
   try {
-    // Insert sample drivers
+    // Insert drivers from mockData
     const insertDriver = db.prepare(`
       INSERT INTO drivers (id, name, licenseNumber, phoneNumber, status)
       VALUES (?, ?, ?, ?, ?)
     `);
 
-    insertDriver.run('driver-1', 'John Doe', 'DL001', '08123456789', 'available');
-    insertDriver.run('driver-2', 'Jane Smith', 'DL002', '08198765432', 'available');
+    for (const driver of mockData.drivers) {
+      insertDriver.run(driver.id, driver.name, driver.licenseNumber, driver.phoneNumber, driver.status);
+    }
 
-    // Insert sample vehicles
+    // Insert vehicles from mockData
     const insertVehicle = db.prepare(`
       INSERT INTO vehicles (id, plateNumber, type, capacity, driverId, status)
       VALUES (?, ?, ?, ?, ?, ?)
     `);
 
-    insertVehicle.run('vehicle-1', 'B-1234-ABC', 'truck', 12, 'driver-1', 'active');
-    insertVehicle.run('vehicle-2', 'B-5678-DEF', 'tanker', 12, 'driver-2', 'active');
+    for (const vehicle of mockData.vehicles) {
+      insertVehicle.run(vehicle.id, vehicle.plateNumber, vehicle.type, vehicle.capacity, vehicle.driverId, vehicle.status);
+    }
 
-    // Insert sample mills
-    const insertMill = db.prepare(`
-      INSERT INTO mills (id, name, latitude, longitude, address, contactPerson, phoneNumber, avgDailyProduction)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    insertMill.run('mill-1', 'Mill A', -6.1753, 106.8271, 'Jakarta, Indonesia', 'Budi', '02112345678', 240);
-    insertMill.run('mill-2', 'Mill B', -6.2088, 106.8456, 'South Jakarta, Indonesia', 'Siti', '02187654321', 240);
-
-    // Insert sample trip
-    const now = new Date();
-    const insertTrip = db.prepare(`
-      INSERT INTO trips (id, vehicleId, driverId, scheduledDate, status, estimatedDuration)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-
-    const tripId = 'trip-1';
-    insertTrip.run(tripId, 'vehicle-1', 'driver-1', now.toISOString(), 'scheduled', 480);
-
-    // Link mills to trip
-    const insertTripMill = db.prepare(`
-      INSERT INTO trip_mills (tripId, millId, collectionOrder)
-      VALUES (?, ?, ?)
-    `);
-
-    insertTripMill.run(tripId, 'mill-1', 1);
-    insertTripMill.run(tripId, 'mill-2', 2);
-
-    console.log('✓ Seed data inserted');
+    console.log(`✓ Seed data inserted (${mockData.drivers.length} drivers, ${mockData.vehicles.length} vehicles)`);
   } catch (error) {
     console.error('Note: Seed data may already exist:', error);
   } finally {
