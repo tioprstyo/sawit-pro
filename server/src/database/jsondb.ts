@@ -57,8 +57,25 @@ function initializeWithMockData() {
     updatedAt: new Date().toISOString(),
   }));
 
-  db.mills = [];
-  db.trips = [];
+  db.mills = mockData.mills?.map((m: any) => ({
+    ...m,
+    id: m.id || uuidv4(),
+    location: {
+      latitude: m.latitude,
+      longitude: m.longitude,
+      address: m.address,
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  })) || [];
+
+  db.trips = mockData.trips?.map((t: any) => ({
+    ...t,
+    id: t.id || uuidv4(),
+    millIds: mockData.tripMills?.filter((tm: any) => tm.tripId === t.id).map((tm: any) => tm.millId) || [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  })) || [];
 
   saveDatabase();
 }
