@@ -1,33 +1,42 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './store';
-import { db } from './services/database';
+import { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import { db } from "./services/database";
 import {
   Dashboard,
   VehicleList,
   DriverList,
   MillList,
   TripList,
-} from './components/organisms';
-import styles from './App.module.css';
+} from "./components/organisms";
+import styles from "./App.module.css";
 
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const location = useLocation();
 
   const menuItems = [
-    { label: 'Dashboard', path: '/', icon: '📊' },
-    { label: 'Vehicles', path: '/vehicles', icon: '🚛' },
-    { label: 'Drivers', path: '/drivers', icon: '👤' },
-    { label: 'Mills', path: '/mills', icon: '🏭' },
-    { label: 'Trips', path: '/trips', icon: '🛣️' },
+    { label: "Dashboard", path: "/", icon: "📊" },
+    { label: "Vehicles", path: "/vehicles", icon: "🚛" },
+    { label: "Drivers", path: "/drivers", icon: "👤" },
+    { label: "Mills", path: "/mills", icon: "🏭" },
+    { label: "Trips", path: "/trips", icon: "🛣️" },
   ];
 
   return (
     <div className={styles.appLayout}>
       {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.open : styles.closed}`}>
+      <aside
+        className={`${styles.sidebar} ${sidebarOpen ? styles.open : styles.closed}`}
+      >
         <div className={styles.sidebarContent}>
           <div className={styles.sidebarHeader}>
             <Link to="/" className={styles.sidebarLogo}>
@@ -41,7 +50,7 @@ function AppLayout() {
                 key={item.path}
                 to={item.path}
                 className={`${styles.navItem} ${
-                  location.pathname === item.path ? styles.active : ''
+                  location.pathname === item.path ? styles.active : ""
                 }`}
               >
                 <span className={styles.navIcon}>{item.icon}</span>
@@ -49,13 +58,6 @@ function AppLayout() {
               </Link>
             ))}
           </nav>
-
-          <div className={styles.sidebarFooter}>
-            <div className={styles.upgradeCard}>
-              <div className={styles.upgradeText}>Upgrade to Pro</div>
-              <button className={styles.upgradeBtn}>→</button>
-            </div>
-          </div>
         </div>
       </aside>
 
@@ -73,20 +75,30 @@ function AppLayout() {
             <h1 className={styles.pageTitle}>Fleet Management</h1>
           </div>
           <div className={styles.headerRight}>
-            <div className={styles.searchBar}>
-              <span className={styles.searchIcon}>🔍</span>
-              <input
-                type="text"
-                placeholder="Search anything..."
-                className={styles.searchInput}
-              />
-            </div>
-            <button className={styles.notificationBtn}>
-              🔔
-              <span className={styles.badge}>3</span>
-            </button>
             <div className={styles.userProfile}>
-              <div className={styles.userAvatar}>👤</div>
+              <button
+                className={styles.userAvatarBtn}
+                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+              >
+                <div className={styles.userAvatar}>👤</div>
+              </button>
+              {profileMenuOpen && (
+                <div className={styles.profileMenu}>
+                  <button className={styles.profileMenuItem}>
+                    ⚙️ Settings
+                  </button>
+                  <div className={styles.profileMenuDivider}></div>
+                  <button
+                    className={styles.profileMenuItem}
+                    onClick={() => {
+                      alert("Logged out!");
+                      setProfileMenuOpen(false);
+                    }}
+                  >
+                    🚪 Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>

@@ -1,0 +1,45 @@
+.filterContainer {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: #1a1a1a;
+  border: 1px solid #404040;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  min-width: 150px;
+}
+
+.filterSelect:hover {
+  border-color: #6366f1;
+  background: #1a1a1a;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.filterSelect option {
+  background: #242424;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .filterContainer {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: unset;
+  }
+}

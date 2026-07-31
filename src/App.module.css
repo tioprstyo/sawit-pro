@@ -20,7 +20,9 @@
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  position: relative;
+  position: sticky;
+  top: 0;
+  height: 100vh;
   z-index: 50;
 }
 
@@ -34,6 +36,8 @@
   flex-direction: column;
   height: 100%;
   padding: var(--spacing-lg);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebarHeader {
@@ -204,7 +208,7 @@
   background: #333;
   border: 1px solid #404040;
   border-radius: var(--radius-lg);
-  display: flex;
+  display: none;
   align-items: center;
   padding: 0 var(--spacing-md);
   transition: all var(--transition-base);
@@ -244,7 +248,7 @@
   height: 40px;
   border-radius: var(--radius-md);
   cursor: pointer;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
@@ -278,6 +282,7 @@
   gap: var(--spacing-md);
   padding: 0 var(--spacing-md);
   cursor: pointer;
+  position: relative;
 }
 
 .userAvatar {
@@ -294,6 +299,55 @@
 
 .userAvatar:hover {
   transform: scale(1.05);
+}
+
+.userAvatarBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--spacing-md);
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.profileMenuItem {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: none;
+  border: none;
+  color: #bbb;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all var(--transition-base);
+  font-family: inherit;
+}
+
+.profileMenuItem:hover {
+  background: #333;
+  color: #fff;
+}
+
+.profileMenuDivider {
+  height: 1px;
+  background: #333;
+  margin: 0;
 }
 
 /* Main Content */

@@ -1,45 +1,59 @@
+.tableContainer {
+  display: flex;
+  flex-direction: column;
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
 .tableWrapper {
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  flex: 1;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  font-size: 0.9rem;
 }
 
 .table thead {
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #e0e0e0;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
 }
 
 .table th {
-  padding: 16px;
+  padding: var(--spacing-lg);
   text-align: left;
   font-weight: 600;
-  font-size: 14px;
-  color: #333;
+  color: #999;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
 }
 
 .table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 14px;
-  color: #666;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid #333;
+  color: #bbb;
 }
 
 .table tbody tr {
-  transition: background-color 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .table tbody tr:hover {
-  background-color: #f8f9fa;
+  background: #2a2a2a;
 }
 
 .clickable {
   cursor: pointer;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .emptyState {
@@ -47,4 +61,182 @@
   text-align: center;
   color: #999;
   font-size: 14px;
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  background: #1a1a1a;
+  border-top: 1px solid #333;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.paginationBtn {
+  padding: 8px 16px;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #bbb;
+  transition: all var(--transition-base);
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: #333;
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.paginationBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #bbb;
+  font-weight: 500;
+}
+
+.pageInput {
+  width: 50px;
+  padding: 6px 8px;
+  border: 1px solid #404040;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  text-align: center;
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.pageInput:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.itemsPerPageSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #bbb;
+}
+
+.itemsPerPageSelector label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.itemsSelect {
+  padding: 6px 8px;
+  border: 1px solid #404040;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: #2a2a2a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.itemsSelect:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.totalItems {
+  font-size: 14px;
+  color: #999;
+  font-weight: 500;
+}
+
+/* Status Badge Styles */
+.statusBadgeActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusBadgeSick {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusBadgeOnTrip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusBadgeLeave {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  background: rgba(147, 112, 219, 0.2);
+  color: #9370db;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .paginationBtn {
+    width: 100%;
+  }
+
+  .pageInfo,
+  .itemsPerPageSelector {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table th,
+  .table td {
+    padding: var(--spacing-md);
+    font-size: 0.8rem;
+  }
 }

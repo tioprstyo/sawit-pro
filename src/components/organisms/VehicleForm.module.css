@@ -15,6 +15,11 @@
   transition: border-color 0.2s ease;
 }
 
+select,
+select::picker(select) {
+  appearance: base-select;
+}
+
 .select:focus {
   outline: none;
   border-color: #007bff;

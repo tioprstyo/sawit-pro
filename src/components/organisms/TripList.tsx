@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useFetchTrips, useFetchDrivers, useFetchVehicles } from '../../hooks/useFetchData';
-import { Table } from '../molecules';
-import { Badge, Spinner } from '../atoms';
-import type { RootState } from '../../store';
+import { Table, SearchBar, FilterBar } from '../molecules';
+import { Spinner } from '../atoms';
+import type { RootState, Trip } from '../../store';
 import { format } from 'date-fns';
 import styles from './EntityList.module.css';
 
@@ -11,6 +11,8 @@ export const TripList: React.FC = () => {
   const tripsState = useFetchTrips();
   const drivorsState = useFetchDrivers();
   const vehiclesState = useFetchVehicles();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({ status: '' });
 
   const drivers = useSelector((state: RootState) => state.drivers.items);
   const vehicles = useSelector((state: RootState) => state.vehicles.items);
@@ -22,6 +24,26 @@ export const TripList: React.FC = () => {
   const getVehiclePlate = (vehicleId: string) => {
     return vehicles.find(v => v.id === vehicleId)?.plateNumber || 'N/A';
   };
+
+  const filterOptions = {
+    status: [
+      { value: 'scheduled', label: 'Scheduled' },
+      { value: 'in_progress', label: 'In Progress' },
+      { value: 'completed', label: 'Completed' },
+      { value: 'cancelled', label: 'Cancelled' },
+    ],
+  };
+
+  const filteredTrips = useMemo(() => {
+    return tripsState.items.filter((trip: any) => {
+      const matchesSearch =
+        trip.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getDriverName(trip.driverId).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getVehiclePlate(trip.vehicleId).toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = !filters.status || trip.status === filters.status;
+      return matchesSearch && matchesFilter;
+    });
+  }, [tripsState.items, searchQuery, filters, drivers, vehicles]);
 
   const columns = [
     {
@@ -48,24 +70,54 @@ export const TripList: React.FC = () => {
       key: 'status',
       label: 'Status',
       render: (status: string) => {
-        let variant: 'success' | 'info' | 'warning' | 'danger' = 'info';
-        if (status === 'completed') variant = 'success';
-        else if (status === 'in_progress') variant = 'info';
-        else if (status === 'cancelled') variant = 'danger';
-        return <Badge variant={variant}>{status}</Badge>;
+        let className = '';
+        switch (status) {
+          case 'scheduled':
+            className = styles.statusDefault;
+            break;
+          case 'in_progress':
+            className = styles.statusOnTrip;
+            break;
+          case 'completed':
+            className = styles.statusActive;
+            break;
+          case 'cancelled':
+            className = styles.statusSick;
+            break;
+          default:
+            className = styles.statusDefault;
+        }
+        return <span className={className}>● {status}</span>;
       },
     },
   ];
 
   return (
     <div className={styles.container}>
-      <h2>Trips</h2>
+      <div className={styles.header}>
+        <h2>Trips</h2>
+        <div className={styles.controls}>
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search by trip ID, driver, or vehicle..."
+          />
+          <FilterBar
+            filters={filters}
+            filterOptions={filterOptions}
+            onFilterChange={(filterName, value) =>
+              setFilters({ ...filters, [filterName]: value })
+            }
+          />
+        </div>
+      </div>
+
       {tripsState.loading || drivorsState.loading || vehiclesState.loading ? (
         <Spinner />
       ) : tripsState.error ? (
         <div className={styles.error}>{tripsState.error}</div>
       ) : (
-        <Table columns={columns} data={tripsState.items} />
+        <Table columns={columns} data={filteredTrips} pagination itemsPerPage={10} />
       )}
     </div>
   );

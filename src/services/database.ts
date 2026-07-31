@@ -1,5 +1,6 @@
 import type { Vehicle, Driver, Mill, Trip } from '../types';
 import { VehicleType, DriverStatus, VehicleStatus, TripStatus } from '../types';
+import { mockData } from '../utils/mock-data';
 
 let vehicles: Vehicle[] = [];
 let drivers: Driver[] = [];
@@ -137,72 +138,61 @@ export const db = {
     mills = [];
     trips = [];
 
-    // Add sample drivers
-    const driver1 = db.addDriver({
-      name: 'John Doe',
-      licenseNumber: 'DL001',
-      phoneNumber: '08123456789',
-      status: DriverStatus.AVAILABLE,
-    });
+    // Add all drivers from mockData
+    for (const driverData of mockData.drivers) {
+      db.addDriver({
+        name: driverData.name,
+        licenseNumber: driverData.licenseNumber,
+        phoneNumber: driverData.phoneNumber,
+        status: driverData.status as DriverStatus,
+      });
+    }
 
-    const driver2 = db.addDriver({
-      name: 'Jane Smith',
-      licenseNumber: 'DL002',
-      phoneNumber: '08198765432',
-      status: DriverStatus.AVAILABLE,
-    });
+    // Add all vehicles from mockData
+    for (const vehicleData of mockData.vehicles) {
+      db.addVehicle({
+        plateNumber: vehicleData.plateNumber,
+        type: vehicleData.type as VehicleType,
+        capacity: vehicleData.capacity,
+        driverId: vehicleData.driverId,
+        status: vehicleData.status as VehicleStatus,
+      });
+    }
 
-    // Add sample vehicles
-    const vehicle1 = db.addVehicle({
-      plateNumber: 'B-1234-ABC',
-      type: VehicleType.TRUCK,
-      capacity: 12,
-      driverId: driver1.id,
-      status: VehicleStatus.ACTIVE,
-    });
+    // Add all mills from mockData
+    if (mockData.mills && mockData.mills.length > 0) {
+      for (const millData of mockData.mills) {
+        db.addMill({
+          name: millData.name,
+          location: {
+            latitude: millData.latitude,
+            longitude: millData.longitude,
+            address: millData.address,
+          },
+          contactPerson: millData.contactPerson,
+          phoneNumber: millData.phoneNumber,
+          avgDailyProduction: millData.avgDailyProduction,
+        });
+      }
+    }
 
-    db.addVehicle({
-      plateNumber: 'B-5678-DEF',
-      type: VehicleType.TANKER,
-      capacity: 12,
-      driverId: driver2.id,
-      status: VehicleStatus.ACTIVE,
-    });
+    // Add all trips from mockData
+    if (mockData.trips && mockData.trips.length > 0) {
+      for (const tripData of mockData.trips) {
+        const tripMills = mockData.tripMills
+          ?.filter(tm => tm.tripId === tripData.id)
+          .map(tm => tm.millId) || [];
 
-    // Add sample mills
-    const mill1 = db.addMill({
-      name: 'Mill A',
-      location: {
-        latitude: -6.1753,
-        longitude: 106.8271,
-        address: 'Jakarta, Indonesia',
-      },
-      contactPerson: 'Budi',
-      phoneNumber: '02112345678',
-      avgDailyProduction: 240,
-    });
-
-    const mill2 = db.addMill({
-      name: 'Mill B',
-      location: {
-        latitude: -6.2088,
-        longitude: 106.8456,
-        address: 'South Jakarta, Indonesia',
-      },
-      contactPerson: 'Siti',
-      phoneNumber: '02187654321',
-      avgDailyProduction: 240,
-    });
-
-    // Add sample trips
-    db.addTrip({
-      vehicleId: vehicle1.id,
-      driverId: driver1.id,
-      millIds: [mill1.id, mill2.id],
-      scheduledDate: new Date(),
-      status: TripStatus.SCHEDULED,
-      collections: [],
-      estimatedDuration: 480,
-    });
+        db.addTrip({
+          vehicleId: tripData.vehicleId,
+          driverId: tripData.driverId,
+          millIds: tripMills,
+          scheduledDate: new Date(tripData.scheduledDate),
+          status: tripData.status as TripStatus,
+          collections: [],
+          estimatedDuration: tripData.estimatedDuration,
+        });
+      }
+    }
   },
 };
