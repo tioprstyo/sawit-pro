@@ -138,31 +138,40 @@ export const db = {
     mills = [];
     trips = [];
 
-    // Add all drivers from mockData
+    // Add all drivers from mockData - preserve original IDs
     for (const driverData of mockData.drivers) {
-      db.addDriver({
+      const newDriver: Driver = {
+        id: driverData.id,
         name: driverData.name,
         licenseNumber: driverData.licenseNumber,
         phoneNumber: driverData.phoneNumber,
         status: driverData.status as DriverStatus,
-      });
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      drivers.push(newDriver);
     }
 
-    // Add all vehicles from mockData
+    // Add all vehicles from mockData - preserve original IDs
     for (const vehicleData of mockData.vehicles) {
-      db.addVehicle({
+      const newVehicle: Vehicle = {
+        id: vehicleData.id,
         plateNumber: vehicleData.plateNumber,
         type: vehicleData.type as VehicleType,
         capacity: vehicleData.capacity,
         driverId: vehicleData.driverId,
         status: vehicleData.status as VehicleStatus,
-      });
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      vehicles.push(newVehicle);
     }
 
-    // Add all mills from mockData
+    // Add all mills from mockData - preserve original IDs
     if (mockData.mills && mockData.mills.length > 0) {
       for (const millData of mockData.mills) {
-        db.addMill({
+        const newMill: Mill = {
+          id: millData.id,
           name: millData.name,
           location: {
             latitude: millData.latitude,
@@ -172,18 +181,22 @@ export const db = {
           contactPerson: millData.contactPerson,
           phoneNumber: millData.phoneNumber,
           avgDailyProduction: millData.avgDailyProduction,
-        });
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        mills.push(newMill);
       }
     }
 
-    // Add all trips from mockData
+    // Add all trips from mockData - preserve original IDs
     if (mockData.trips && mockData.trips.length > 0) {
       for (const tripData of mockData.trips) {
         const tripMills = mockData.tripMills
           ?.filter(tm => tm.tripId === tripData.id)
           .map(tm => tm.millId) || [];
 
-        db.addTrip({
+        const newTrip: Trip = {
+          id: tripData.id,
           vehicleId: tripData.vehicleId,
           driverId: tripData.driverId,
           millIds: tripMills,
@@ -191,7 +204,10 @@ export const db = {
           status: tripData.status as TripStatus,
           collections: [],
           estimatedDuration: tripData.estimatedDuration,
-        });
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        trips.push(newTrip);
       }
     }
   },
