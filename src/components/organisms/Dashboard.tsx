@@ -58,6 +58,9 @@ export const Dashboard: React.FC = () => {
   ];
 
   const filteredVehicles = useMemo(() => {
+    if (!Array.isArray(vehicles)) {
+      return [];
+    }
     return vehicles.filter((vehicle) => {
       const matchesSearch =
         vehicle.plateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
