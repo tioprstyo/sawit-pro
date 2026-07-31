@@ -1,7 +1,8 @@
 import axios from 'axios';
 import type { Vehicle, Driver, Mill, Trip, DashboardSummary } from '../types';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+// Use environment variable if available, otherwise default to localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 const client = axios.create({
   baseURL: API_BASE_URL,

@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Build args
+ARG VITE_API_URL=http://api:3001/api
+
 # Copy package files
 COPY package*.json ./
 
@@ -12,8 +15,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build application
-RUN npm run build
+# Build application with API URL
+RUN VITE_API_URL=$VITE_API_URL npm run build
 
 # Runtime stage
 FROM node:20-alpine
