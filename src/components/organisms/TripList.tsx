@@ -65,9 +65,16 @@ export const TripList: React.FC = () => {
       render: (driverId: string) => getDriverName(driverId),
     },
     {
-      key: 'scheduledDate',
-      label: 'Scheduled Date',
-      render: (date: any) => format(new Date(date), 'yyyy-MM-dd'),
+      key: 'date',
+      label: 'Date',
+      render: (date: any) => {
+        if (!date) return 'N/A';
+        try {
+          return format(new Date(date), 'yyyy-MM-dd');
+        } catch {
+          return 'Invalid date';
+        }
+      },
     },
     {
       key: 'status',

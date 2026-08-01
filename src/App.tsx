@@ -84,9 +84,6 @@ function AppLayout() {
               </button>
               {profileMenuOpen && (
                 <div className={styles.profileMenu}>
-                  <button className={styles.profileMenuItem}>
-                    ⚙️ Settings
-                  </button>
                   <div className={styles.profileMenuDivider}></div>
                   <button
                     className={styles.profileMenuItem}

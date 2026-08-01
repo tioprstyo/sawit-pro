@@ -1,13 +1,13 @@
 import express, { Request, Response } from 'express';
-import { jsonDb } from '../database/jsondb.js';
+import { sqliteDb } from '../database/sqlite-db.js';
 
 const router = express.Router();
 
 router.get('/summary', (req: Request, res: Response) => {
   try {
-    const allVehicles = jsonDb.getVehicles();
-    const allDrivers = jsonDb.getDrivers();
-    const allTrips = jsonDb.getTrips();
+    const allVehicles = sqliteDb.getVehicles();
+    const allDrivers = sqliteDb.getDrivers();
+    const allTrips = sqliteDb.getTrips();
 
     const totalVehicles = allVehicles.length;
     const activeVehicles = allVehicles.filter((v: any) => v.status === 'active').length;

@@ -9148,136 +9148,139 @@ export const mockData = {
   ],
 };
 
-try {
-  console.log("🌱 Seeding database with mock data...");
+// Only run seeding if this file is executed directly (not when imported)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  try {
+    console.log("🌱 Seeding database with mock data...");
 
-  const now = new Date().toISOString();
+    const now = new Date().toISOString();
 
-  // Clear existing data (in correct order to respect foreign keys)
-  console.log("  Clearing existing data...");
-  db.exec(`
-    DELETE FROM collections;
-    DELETE FROM trip_mills;
-    DELETE FROM trips;
-    DELETE FROM vehicles;
-    DELETE FROM drivers;
-    DELETE FROM mills;
-  `);
+    // Clear existing data (in correct order to respect foreign keys)
+    console.log("  Clearing existing data...");
+    db.exec(`
+      DELETE FROM collections;
+      DELETE FROM trip_mills;
+      DELETE FROM trips;
+      DELETE FROM vehicles;
+      DELETE FROM drivers;
+      DELETE FROM mills;
+    `);
 
-  // Insert drivers
-  console.log("  Inserting drivers...");
-  const insertDriver = db.prepare(`
-    INSERT INTO drivers (id, name, licenseNumber, phoneNumber, status, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
+    // Insert drivers
+    console.log("  Inserting drivers...");
+    const insertDriver = db.prepare(`
+      INSERT INTO drivers (id, name, licenseNumber, phoneNumber, status, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
 
-  mockData.drivers.forEach((driver) => {
-    insertDriver.run(
-      driver.id,
-      driver.name,
-      driver.licenseNumber,
-      driver.phoneNumber,
-      driver.status,
-      now,
-      now,
+    mockData.drivers.forEach((driver) => {
+      insertDriver.run(
+        driver.id,
+        driver.name,
+        driver.licenseNumber,
+        driver.phoneNumber,
+        driver.status,
+        now,
+        now,
+      );
+    });
+    console.log(`    ✓ Inserted ${mockData.drivers.length} drivers`);
+
+    // Insert mills
+    console.log("  Inserting mills...");
+    const insertMill = db.prepare(`
+      INSERT INTO mills (id, name, latitude, longitude, address, contactPerson, phoneNumber, avgDailyProduction, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    mockData.mills.forEach((mill) => {
+      insertMill.run(
+        mill.id,
+        mill.name,
+        mill.latitude,
+        mill.longitude,
+        mill.address,
+        mill.contactPerson,
+        mill.phoneNumber,
+        mill.avgDailyProduction,
+        now,
+        now,
+      );
+    });
+    console.log(`    ✓ Inserted ${mockData.mills.length} mills`);
+
+    // Insert vehicles
+    console.log("  Inserting vehicles...");
+    const insertVehicle = db.prepare(`
+      INSERT INTO vehicles (id, plateNumber, type, capacity, driverId, status, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    mockData.vehicles.forEach((vehicle) => {
+      insertVehicle.run(
+        vehicle.id,
+        vehicle.plateNumber,
+        vehicle.type,
+        vehicle.capacity,
+        vehicle.driverId,
+        vehicle.status,
+        now,
+        now,
+      );
+    });
+    console.log(`    ✓ Inserted ${mockData.vehicles.length} vehicles`);
+
+    // Insert trips
+    console.log("  Inserting trips...");
+    const insertTrip = db.prepare(`
+      INSERT INTO trips (id, vehicleId, driverId, scheduledDate, status, estimatedDuration, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    mockData.trips.forEach((trip) => {
+      insertTrip.run(
+        trip.id,
+        trip.vehicleId,
+        trip.driverId,
+        trip.scheduledDate,
+        trip.status,
+        trip.estimatedDuration,
+        now,
+        now,
+      );
+    });
+    console.log(`    ✓ Inserted ${mockData.trips.length} trips`);
+
+    // Insert trip-mills relationships
+    console.log("  Inserting trip-mill relationships...");
+    const insertTripMill = db.prepare(`
+      INSERT INTO trip_mills (tripId, millId, collectionOrder)
+      VALUES (?, ?, ?)
+    `);
+
+    mockData.tripMills.forEach((tm) => {
+      insertTripMill.run(tm.tripId, tm.millId, tm.collectionOrder);
+    });
+    console.log(
+      `    ✓ Inserted ${mockData.tripMills.length} trip-mill relationships`,
     );
-  });
-  console.log(`    ✓ Inserted ${mockData.drivers.length} drivers`);
 
-  // Insert mills
-  console.log("  Inserting mills...");
-  const insertMill = db.prepare(`
-    INSERT INTO mills (id, name, latitude, longitude, address, contactPerson, phoneNumber, avgDailyProduction, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+    console.log("");
+    console.log("✅ Database seeded successfully!");
+    console.log("");
+    console.log("📊 Seeded data summary:");
+    console.log(`   • Drivers: ${mockData.drivers.length}`);
+    console.log(`   • Vehicles: ${mockData.vehicles.length}`);
+    console.log(`   • Mills: ${mockData.mills.length}`);
+    console.log(`   • Trips: ${mockData.trips.length}`);
+    console.log(`   • Trip-Mill relationships: ${mockData.tripMills.length}`);
+    console.log("");
 
-  mockData.mills.forEach((mill) => {
-    insertMill.run(
-      mill.id,
-      mill.name,
-      mill.latitude,
-      mill.longitude,
-      mill.address,
-      mill.contactPerson,
-      mill.phoneNumber,
-      mill.avgDailyProduction,
-      now,
-      now,
-    );
-  });
-  console.log(`    ✓ Inserted ${mockData.mills.length} mills`);
-
-  // Insert vehicles
-  console.log("  Inserting vehicles...");
-  const insertVehicle = db.prepare(`
-    INSERT INTO vehicles (id, plateNumber, type, capacity, driverId, status, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  mockData.vehicles.forEach((vehicle) => {
-    insertVehicle.run(
-      vehicle.id,
-      vehicle.plateNumber,
-      vehicle.type,
-      vehicle.capacity,
-      vehicle.driverId,
-      vehicle.status,
-      now,
-      now,
-    );
-  });
-  console.log(`    ✓ Inserted ${mockData.vehicles.length} vehicles`);
-
-  // Insert trips
-  console.log("  Inserting trips...");
-  const insertTrip = db.prepare(`
-    INSERT INTO trips (id, vehicleId, driverId, scheduledDate, status, estimatedDuration, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  mockData.trips.forEach((trip) => {
-    insertTrip.run(
-      trip.id,
-      trip.vehicleId,
-      trip.driverId,
-      trip.scheduledDate,
-      trip.status,
-      trip.estimatedDuration,
-      now,
-      now,
-    );
-  });
-  console.log(`    ✓ Inserted ${mockData.trips.length} trips`);
-
-  // Insert trip-mills relationships
-  console.log("  Inserting trip-mill relationships...");
-  const insertTripMill = db.prepare(`
-    INSERT INTO trip_mills (tripId, millId, collectionOrder)
-    VALUES (?, ?, ?)
-  `);
-
-  mockData.tripMills.forEach((tm) => {
-    insertTripMill.run(tm.tripId, tm.millId, tm.collectionOrder);
-  });
-  console.log(
-    `    ✓ Inserted ${mockData.tripMills.length} trip-mill relationships`,
-  );
-
-  console.log("");
-  console.log("✅ Database seeded successfully!");
-  console.log("");
-  console.log("📊 Seeded data summary:");
-  console.log(`   • Drivers: ${mockData.drivers.length}`);
-  console.log(`   • Vehicles: ${mockData.vehicles.length}`);
-  console.log(`   • Mills: ${mockData.mills.length}`);
-  console.log(`   • Trips: ${mockData.trips.length}`);
-  console.log(`   • Trip-Mill relationships: ${mockData.tripMills.length}`);
-  console.log("");
-
-  process.exit(0);
-} catch (error) {
-  console.error("❌ Seeding failed:", error);
-  process.exit(1);
-} finally {
-  db.close();
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Seeding failed:", error);
+    process.exit(1);
+  } finally {
+    db.close();
+  }
 }

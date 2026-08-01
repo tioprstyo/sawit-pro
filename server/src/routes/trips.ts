@@ -1,14 +1,14 @@
 import express, { Request, Response } from 'express';
-import { jsonDb } from '../database/jsondb.js';
+import { sqliteDb } from '../database/sqlite-db.js';
 
 const router = express.Router();
 
 router.get('/', (req: Request, res: Response) => {
   try {
-    const trips = jsonDb.getTrips().map((trip: any) => {
-      const vehicle = jsonDb.getVehicleById(trip.vehicleId);
-      const driver = jsonDb.getDriverById(trip.driverId);
-      const mills = trip.millIds?.map((millId: string) => jsonDb.getMillById(millId)).filter(Boolean) || [];
+    const trips = sqliteDb.getTrips().map((trip: any) => {
+      const vehicle = sqliteDb.getVehicleById(trip.vehicleId);
+      const driver = sqliteDb.getDriverById(trip.driverId);
+      const mills = trip.millIds?.map((millId: string) => sqliteDb.getMillById(millId)).filter(Boolean) || [];
       return {
         ...trip,
         plateNumber: vehicle?.plateNumber,
@@ -24,13 +24,13 @@ router.get('/', (req: Request, res: Response) => {
 
 router.get('/:id', (req: Request, res: Response) => {
   try {
-    const trip = jsonDb.getTripById(req.params.id);
+    const trip = sqliteDb.getTripById(req.params.id);
     if (!trip) {
       return res.status(404).json({ error: 'Trip not found' });
     }
-    const vehicle = jsonDb.getVehicleById(trip.vehicleId);
-    const driver = jsonDb.getDriverById(trip.driverId);
-    const mills = trip.millIds?.map((millId: string) => jsonDb.getMillById(millId)).filter(Boolean) || [];
+    const vehicle = sqliteDb.getVehicleById(trip.vehicleId);
+    const driver = sqliteDb.getDriverById(trip.driverId);
+    const mills = trip.millIds?.map((millId: string) => sqliteDb.getMillById(millId)).filter(Boolean) || [];
     res.json({
       ...trip,
       plateNumber: vehicle?.plateNumber,
@@ -50,7 +50,7 @@ router.post('/', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing or invalid required fields' });
     }
 
-    const trip = jsonDb.addTrip({
+    const trip = sqliteDb.addTrip({
       vehicleId,
       driverId,
       scheduledDate,
@@ -60,9 +60,9 @@ router.post('/', (req: Request, res: Response) => {
       collections: [],
     });
 
-    const vehicle = jsonDb.getVehicleById(trip.vehicleId);
-    const driver = jsonDb.getDriverById(trip.driverId);
-    const mills = trip.millIds?.map((millId: string) => jsonDb.getMillById(millId)).filter(Boolean) || [];
+    const vehicle = sqliteDb.getVehicleById(trip.vehicleId);
+    const driver = sqliteDb.getDriverById(trip.driverId);
+    const mills = trip.millIds?.map((millId: string) => sqliteDb.getMillById(millId)).filter(Boolean) || [];
 
     res.status(201).json({
       ...trip,
@@ -77,13 +77,13 @@ router.post('/', (req: Request, res: Response) => {
 
 router.put('/:id', (req: Request, res: Response) => {
   try {
-    const trip = jsonDb.updateTrip(req.params.id, req.body);
+    const trip = sqliteDb.updateTrip(req.params.id, req.body);
     if (!trip) {
       return res.status(404).json({ error: 'Trip not found' });
     }
-    const vehicle = jsonDb.getVehicleById(trip.vehicleId);
-    const driver = jsonDb.getDriverById(trip.driverId);
-    const mills = trip.millIds?.map((millId: string) => jsonDb.getMillById(millId)).filter(Boolean) || [];
+    const vehicle = sqliteDb.getVehicleById(trip.vehicleId);
+    const driver = sqliteDb.getDriverById(trip.driverId);
+    const mills = trip.millIds?.map((millId: string) => sqliteDb.getMillById(millId)).filter(Boolean) || [];
     res.json({
       ...trip,
       plateNumber: vehicle?.plateNumber,
@@ -97,7 +97,7 @@ router.put('/:id', (req: Request, res: Response) => {
 
 router.delete('/:id', (req: Request, res: Response) => {
   try {
-    const success = jsonDb.deleteTrip(req.params.id);
+    const success = sqliteDb.deleteTrip(req.params.id);
     if (!success) {
       return res.status(404).json({ error: 'Trip not found' });
     }

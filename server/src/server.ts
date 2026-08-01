@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { initializeDatabase } from './database/sqlite-db.js';
 
 // Routes
 import vehicleRoutes from './routes/vehicles.js';
@@ -28,6 +29,14 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
+
+// Initialize database
+try {
+  initializeDatabase();
+} catch (error) {
+  console.error('Failed to initialize database:', error);
+  process.exit(1);
+}
 
 // API Routes
 app.use('/api/vehicles', vehicleRoutes);

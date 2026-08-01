@@ -4,7 +4,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Build args
-ARG VITE_API_URL=http://api:3001/api
+ARG VITE_API_URL=http://localhost:3001/api
 
 # Copy package files
 COPY package*.json ./

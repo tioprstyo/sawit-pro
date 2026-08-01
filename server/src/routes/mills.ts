@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
-import { jsonDb } from '../database/jsondb.js';
+import { sqliteDb } from '../database/sqlite-db.js';
 
 const router = express.Router();
 
 router.get('/', (req: Request, res: Response) => {
   try {
-    const mills = jsonDb.getMills();
+    const mills = sqliteDb.getMills();
     res.json(mills);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -14,7 +14,7 @@ router.get('/', (req: Request, res: Response) => {
 
 router.get('/:id', (req: Request, res: Response) => {
   try {
-    const mill = jsonDb.getMillById(req.params.id);
+    const mill = sqliteDb.getMillById(req.params.id);
     if (!mill) return res.status(404).json({ error: 'Mill not found' });
     res.json(mill);
   } catch (error: any) {
@@ -24,13 +24,14 @@ router.get('/:id', (req: Request, res: Response) => {
 
 router.post('/', (req: Request, res: Response) => {
   try {
-    const { name, latitude, longitude, address, contactPerson, phoneNumber, avgDailyProduction } = req.body;
+    const { id, name, latitude, longitude, address, contactPerson, phoneNumber, avgDailyProduction } = req.body;
 
     if (!name || latitude === undefined || longitude === undefined || !address) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const mill = jsonDb.addMill({
+    const mill = sqliteDb.addMill({
+      id,
       name,
       latitude,
       longitude,
@@ -48,7 +49,7 @@ router.post('/', (req: Request, res: Response) => {
 
 router.put('/:id', (req: Request, res: Response) => {
   try {
-    const mill = jsonDb.updateMill(req.params.id, req.body);
+    const mill = sqliteDb.updateMill(req.params.id, req.body);
     if (!mill) {
       return res.status(404).json({ error: 'Mill not found' });
     }
@@ -60,7 +61,7 @@ router.put('/:id', (req: Request, res: Response) => {
 
 router.delete('/:id', (req: Request, res: Response) => {
   try {
-    const success = jsonDb.deleteMill(req.params.id);
+    const success = sqliteDb.deleteMill(req.params.id);
     if (!success) {
       return res.status(404).json({ error: 'Mill not found' });
     }

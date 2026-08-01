@@ -23,6 +23,7 @@
   gap: var(--spacing-md);
   flex-wrap: wrap;
   width: 100%;
+  margin-bottom: var(--spacing-2xl);
 }
 
 .actions {
