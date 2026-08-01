@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
 import { mockData } from './seed.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -238,12 +239,13 @@ export const sqliteDb = {
   addDriver: (data: any) => {
     const database = getDb();
     const now = new Date().toISOString();
+    const id = data.id || uuidv4();
     database
       .prepare(
         'INSERT INTO drivers (id, name, licenseNumber, phoneNumber, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
       )
-      .run(data.id, data.name, data.licenseNumber, data.phoneNumber, data.status || 'available', now, now);
-    return database.prepare('SELECT * FROM drivers WHERE id = ?').get(data.id);
+      .run(id, data.name, data.licenseNumber, data.phoneNumber, data.status || 'available', now, now);
+    return database.prepare('SELECT * FROM drivers WHERE id = ?').get(id);
   },
   updateDriver: (id: string, updates: any) => {
     const database = getDb();
@@ -278,12 +280,13 @@ export const sqliteDb = {
   addVehicle: (data: any) => {
     const database = getDb();
     const now = new Date().toISOString();
+    const id = data.id || uuidv4();
     database
       .prepare(
         'INSERT INTO vehicles (id, plateNumber, type, capacity, driverId, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       )
-      .run(data.id, data.plateNumber, data.type, data.capacity, data.driverId, data.status || 'active', now, now);
-    return database.prepare('SELECT * FROM vehicles WHERE id = ?').get(data.id);
+      .run(id, data.plateNumber, data.type, data.capacity, data.driverId, data.status || 'active', now, now);
+    return database.prepare('SELECT * FROM vehicles WHERE id = ?').get(id);
   },
   updateVehicle: (id: string, updates: any) => {
     const database = getDb();
@@ -316,12 +319,13 @@ export const sqliteDb = {
   addMill: (data: any) => {
     const database = getDb();
     const now = new Date().toISOString();
+    const id = data.id || uuidv4();
     database
       .prepare(
         'INSERT INTO mills (id, name, latitude, longitude, address, contactPerson, phoneNumber, avgDailyProduction, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       )
       .run(
-        data.id,
+        id,
         data.name,
         data.latitude,
         data.longitude,
@@ -332,7 +336,7 @@ export const sqliteDb = {
         now,
         now,
       );
-    return database.prepare('SELECT * FROM mills WHERE id = ?').get(data.id);
+    return database.prepare('SELECT * FROM mills WHERE id = ?').get(id);
   },
   updateMill: (id: string, updates: any) => {
     const database = getDb();
@@ -377,12 +381,13 @@ export const sqliteDb = {
   addTrip: (data: any) => {
     const database = getDb();
     const now = new Date().toISOString();
+    const id = data.id || uuidv4();
     database
       .prepare(
         'INSERT INTO trips (id, vehicleId, driverId, date, status, estimatedDuration, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       )
-      .run(data.id, data.vehicleId, data.driverId, data.date || data.scheduledDate, data.status || 'scheduled', data.estimatedDuration || 0, now, now);
-    return database.prepare('SELECT * FROM trips WHERE id = ?').get(data.id);
+      .run(id, data.vehicleId, data.driverId, data.date || data.scheduledDate, data.status || 'scheduled', data.estimatedDuration || 0, now, now);
+    return database.prepare('SELECT * FROM trips WHERE id = ?').get(id);
   },
   updateTrip: (id: string, updates: any) => {
     const database = getDb();

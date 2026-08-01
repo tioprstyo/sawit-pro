@@ -65,17 +65,31 @@ export const VehicleList: React.FC = () => {
   };
 
   const filteredVehicles = useMemo(() => {
-    if (!vehiclesState?.items || !Array.isArray(vehiclesState.items)) {
+    try {
+      if (!vehiclesState?.items || !Array.isArray(vehiclesState.items)) {
+        return [];
+      }
+      return vehiclesState.items.filter((vehicle) => {
+        try {
+          if (!vehicle || typeof vehicle !== 'object') return false;
+          const searchLower = String(searchQuery || '').toLowerCase();
+          const plate = String(vehicle?.plateNumber ?? '').toLowerCase();
+          const type = String(vehicle?.type ?? '').toLowerCase();
+          const matchesSearch =
+            plate.includes(searchLower) ||
+            type.includes(searchLower);
+          const matchesTypeFilter = !filters.type || String(vehicle?.type ?? '') === filters.type;
+          const matchesStatusFilter = !filters.status || String(vehicle?.status ?? '') === filters.status;
+          return matchesSearch && matchesTypeFilter && matchesStatusFilter;
+        } catch (e) {
+          console.error('VehicleList filter error:', vehicle, e);
+          return false;
+        }
+      });
+    } catch (e) {
+      console.error('VehicleList useMemo error:', e);
       return [];
     }
-    return vehiclesState.items.filter((vehicle) => {
-      const matchesSearch =
-        vehicle.plateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vehicle.type.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTypeFilter = !filters.type || vehicle.type === filters.type;
-      const matchesStatusFilter = !filters.status || vehicle.status === filters.status;
-      return matchesSearch && matchesTypeFilter && matchesStatusFilter;
-    });
   }, [vehiclesState, searchQuery, filters]);
 
   const columns = [

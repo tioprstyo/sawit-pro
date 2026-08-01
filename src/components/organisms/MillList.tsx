@@ -33,17 +33,33 @@ export const MillList: React.FC = () => {
   ];
 
   const filteredMills = useMemo(() => {
-    if (!millsState?.items || !Array.isArray(millsState.items)) {
+    try {
+      if (!millsState?.items || !Array.isArray(millsState.items)) {
+        return [];
+      }
+      return millsState.items.filter((mill) => {
+        try {
+          if (!mill || typeof mill !== 'object') return false;
+          const searchLower = String(searchQuery ?? '').toLowerCase();
+          const name = String(mill?.name ?? '').toLowerCase();
+          const address = String(mill?.location?.address ?? '').toLowerCase();
+          const contact = String(mill?.contactPerson ?? '').toLowerCase();
+          const phone = String(mill?.phoneNumber ?? '');
+          const matchesSearch =
+            name.includes(searchLower) ||
+            address.includes(searchLower) ||
+            contact.includes(searchLower) ||
+            phone.includes(searchQuery);
+          return matchesSearch;
+        } catch (e) {
+          console.error('MillList filter error:', mill, e);
+          return false;
+        }
+      });
+    } catch (e) {
+      console.error('MillList useMemo error:', e);
       return [];
     }
-    return millsState.items.filter((mill) => {
-      const matchesSearch =
-        mill.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        mill.location?.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        mill.contactPerson.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        mill.phoneNumber.includes(searchQuery);
-      return matchesSearch;
-    });
   }, [millsState, searchQuery]);
 
   return (

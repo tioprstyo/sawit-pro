@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { api } from '../../api';
-import type { Vehicle } from '../../types';
-import { Spinner } from '../atoms';
+import React, { useEffect, useState, useMemo } from "react";
+import { api } from "../../api";
+import type { Vehicle } from "../../types";
+import { Spinner } from "../atoms";
 import {
   LineChart,
   Line,
@@ -13,25 +13,32 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts';
-import styles from './Dashboard.module.css';
+} from "recharts";
+import styles from "./Dashboard.module.css";
 
 export const Dashboard: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const vehiclesData = await api.vehicles.getAll();
+        const [vehiclesData, tripsData] = await Promise.all([
+          api.vehicles.getAll(),
+          api.trips.getAll(),
+        ]);
         setVehicles(vehiclesData);
+        setTrips(tripsData);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+        setError(
+          err instanceof Error ? err.message : "Failed to load dashboard",
+        );
       } finally {
         setLoading(false);
       }
@@ -40,34 +47,69 @@ export const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
-  const tripData = [
-    { time: '00:00', scheduled: 124, live: 60, completed: 40, late: 8 },
-    { time: '04:00', scheduled: 110, live: 55, completed: 45, late: 6 },
-    { time: '08:00', scheduled: 145, live: 75, completed: 60, late: 12 },
-    { time: '12:00', scheduled: 180, live: 90, completed: 75, late: 15 },
-    { time: '16:00', scheduled: 160, live: 85, completed: 70, late: 10 },
-    { time: '20:00', scheduled: 140, live: 70, completed: 50, late: 8 },
-  ];
+  const tripData = useMemo(() => {
+    const hours = [0, 4, 8, 12, 16, 20];
+    return hours.map((hour) => {
+      const hourStr = String(hour).padStart(2, '0') + ':00';
+      const hourTrips = trips.filter((trip) => {
+        if (!trip?.scheduledDate) return false;
+        const date = new Date(trip.scheduledDate);
+        return date.getHours() === hour;
+      });
+      return {
+        time: hourStr,
+        scheduled: hourTrips.length,
+        live: hourTrips.filter((t) => t?.status === 'in_progress').length,
+        completed: hourTrips.filter((t) => t?.status === 'completed').length,
+        late: hourTrips.filter((t) => t?.status === 'cancelled').length,
+      };
+    });
+  }, [trips]);
 
-  const vehicleDistribution = [
-    { name: 'In Accidents', value: 2, color: '#ef4444' },
-    { name: 'Idling', value: 2, color: '#f59e0b' },
-    { name: 'Out of Service', value: 15, color: '#8b5cf6' },
-    { name: 'En Route', value: 134, color: '#f0a77d' },
-    { name: 'Available', value: 45, color: '#10b981' },
-  ];
+  const vehicleDistribution = useMemo(() => {
+    if (!Array.isArray(vehicles)) return [];
+    const statusCounts = {
+      'active': 0,
+      'inactive': 0,
+      'maintenance': 0,
+    };
+    vehicles.forEach((v) => {
+      if (v?.status && statusCounts.hasOwnProperty(v.status)) {
+        statusCounts[v.status as keyof typeof statusCounts]++;
+      }
+    });
+    return [
+      { name: 'Active', value: statusCounts.active, color: '#10b981' },
+      { name: 'Inactive', value: statusCounts.inactive, color: '#8b5cf6' },
+      { name: 'Maintenance', value: statusCounts.maintenance, color: '#f59e0b' },
+    ];
+  }, [vehicles]);
 
   const filteredVehicles = useMemo(() => {
-    if (!Array.isArray(vehicles)) {
+    try {
+      if (!Array.isArray(vehicles)) {
+        return [];
+      }
+      return vehicles.filter((vehicle) => {
+        try {
+          if (!vehicle || typeof vehicle !== 'object') return false;
+          const searchLower = String(searchQuery || "").toLowerCase();
+          const plateNumber = String(vehicle?.plateNumber || "").toLowerCase();
+          const vehicleId = String(vehicle?.id || "").toLowerCase();
+          const matchesSearch =
+            plateNumber.includes(searchLower) ||
+            vehicleId.includes(searchLower);
+          const matchesFilter = !filterStatus || vehicle?.status === filterStatus;
+          return matchesSearch && matchesFilter;
+        } catch (e) {
+          console.error('Filter error for vehicle:', vehicle, e);
+          return false;
+        }
+      });
+    } catch (e) {
+      console.error('Error in filteredVehicles:', e);
       return [];
     }
-    return vehicles.filter((vehicle) => {
-      const matchesSearch =
-        vehicle.plateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vehicle.id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = !filterStatus || vehicle.status === filterStatus;
-      return matchesSearch && matchesFilter;
-    });
   }, [vehicles, searchQuery, filterStatus]);
 
   if (loading) {
@@ -93,13 +135,13 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
         <div className={styles.timestamp}>
-          {new Date().toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-          })}{' '}
-          {new Date().toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
+          {new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })}{" "}
+          {new Date().toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
           })}
         </div>
       </div>
@@ -135,19 +177,19 @@ export const Dashboard: React.FC = () => {
           <h3 className={styles.chartTitle}>24 Hour Trips Data</h3>
           <div className={styles.chartLegend}>
             <span className={styles.legendItem}>
-              <span className={styles.dot} style={{ background: '#9f7aea' }} />
+              <span className={styles.dot} style={{ background: "#9f7aea" }} />
               Scheduled 124
             </span>
             <span className={styles.legendItem}>
-              <span className={styles.dot} style={{ background: '#f0a77d' }} />
+              <span className={styles.dot} style={{ background: "#f0a77d" }} />
               Live Trips 60
             </span>
             <span className={styles.legendItem}>
-              <span className={styles.dot} style={{ background: '#4c9aff' }} />
+              <span className={styles.dot} style={{ background: "#4c9aff" }} />
               Completed 40
             </span>
             <span className={styles.legendItem}>
-              <span className={styles.dot} style={{ background: '#ef4444' }} />
+              <span className={styles.dot} style={{ background: "#ef4444" }} />
               Being late 8
             </span>
           </div>
@@ -158,11 +200,11 @@ export const Dashboard: React.FC = () => {
               <YAxis stroke="#999" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#242424',
-                  border: '1px solid #404040',
-                  borderRadius: '8px',
+                  backgroundColor: "#242424",
+                  border: "1px solid #404040",
+                  borderRadius: "8px",
                 }}
-                labelStyle={{ color: '#fff' }}
+                labelStyle={{ color: "#fff" }}
               />
               <Line
                 type="monotone"
@@ -217,10 +259,10 @@ export const Dashboard: React.FC = () => {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#242424',
-                  border: '1px solid #404040',
-                  borderRadius: '8px',
-                  color: '#fff',
+                  backgroundColor: "#242424",
+                  border: "1px solid #404040",
+                  borderRadius: "8px",
+                  color: "#fff",
                 }}
               />
             </PieChart>
@@ -290,10 +332,16 @@ export const Dashboard: React.FC = () => {
                   <td className={styles.vehicleId}>{vehicle.plateNumber}</td>
                   <td>{vehicle.type}</td>
                   <td>
-                    {new Date().toLocaleDateString()} {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                    {new Date().toLocaleDateString()}{" "}
+                    {new Date().toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </td>
                   <td>
-                    <span className={`${styles.statusBadge} ${styles[vehicle.status]}`}>
+                    <span
+                      className={`${styles.statusBadge} ${styles[vehicle.status]}`}
+                    >
                       ● {vehicle.status}
                     </span>
                   </td>

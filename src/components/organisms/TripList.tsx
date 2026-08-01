@@ -35,17 +35,32 @@ export const TripList: React.FC = () => {
   };
 
   const filteredTrips = useMemo(() => {
-    if (!tripsState?.items || !Array.isArray(tripsState.items)) {
+    try {
+      if (!tripsState?.items || !Array.isArray(tripsState.items)) {
+        return [];
+      }
+      return tripsState.items.filter((trip: any) => {
+        try {
+          if (!trip || typeof trip !== 'object') return false;
+          const searchLower = String(searchQuery ?? '').toLowerCase();
+          const tripId = String(trip?.id ?? '').toLowerCase();
+          const driverName = String(getDriverName(trip?.driverId) ?? '').toLowerCase();
+          const vehiclePlate = String(getVehiclePlate(trip?.vehicleId) ?? '').toLowerCase();
+          const matchesSearch =
+            tripId.includes(searchLower) ||
+            driverName.includes(searchLower) ||
+            vehiclePlate.includes(searchLower);
+          const matchesFilter = !filters.status || String(trip?.status ?? '') === filters.status;
+          return matchesSearch && matchesFilter;
+        } catch (e) {
+          console.error('TripList filter error:', trip, e);
+          return false;
+        }
+      });
+    } catch (e) {
+      console.error('TripList useMemo error:', e);
       return [];
     }
-    return tripsState.items.filter((trip: any) => {
-      const matchesSearch =
-        trip.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        getDriverName(trip.driverId).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        getVehiclePlate(trip.vehicleId).toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = !filters.status || trip.status === filters.status;
-      return matchesSearch && matchesFilter;
-    });
   }, [tripsState, searchQuery, filters, drivers, vehicles]);
 
   const columns = [

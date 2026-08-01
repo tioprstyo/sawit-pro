@@ -58,17 +58,32 @@ export const DriverList: React.FC = () => {
   };
 
   const filteredDrivers = useMemo(() => {
-    if (!driversState?.items || !Array.isArray(driversState.items)) {
+    try {
+      if (!driversState?.items || !Array.isArray(driversState.items)) {
+        return [];
+      }
+      return driversState.items.filter((driver) => {
+        try {
+          if (!driver || typeof driver !== 'object') return false;
+          const searchLower = String(searchQuery ?? '').toLowerCase();
+          const name = String(driver?.name ?? '').toLowerCase();
+          const license = String(driver?.licenseNumber ?? '').toLowerCase();
+          const phone = String(driver?.phoneNumber ?? '');
+          const matchesSearch =
+            name.includes(searchLower) ||
+            license.includes(searchLower) ||
+            phone.includes(searchQuery);
+          const matchesFilter = !filters.status || String(driver?.status ?? '') === filters.status;
+          return matchesSearch && matchesFilter;
+        } catch (e) {
+          console.error('DriverList filter error:', driver, e);
+          return false;
+        }
+      });
+    } catch (e) {
+      console.error('DriverList useMemo error:', e);
       return [];
     }
-    return driversState.items.filter((driver) => {
-      const matchesSearch =
-        driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        driver.licenseNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        driver.phoneNumber.includes(searchQuery);
-      const matchesFilter = !filters.status || driver.status === filters.status;
-      return matchesSearch && matchesFilter;
-    });
   }, [driversState, searchQuery, filters]);
 
   return (
